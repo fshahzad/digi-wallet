@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->decimal('balance', 20, 2)->default(0)->after('name');
+        Schema::table('transactions', function (Blueprint $table) {
+            $table->enum('trans_type', ['sent', 'received'])->after('amount');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('balance');
+        Schema::table('transactions', function (Blueprint $table) {
+            $table->dropColumn('trans_type');
         });
     }
 };
