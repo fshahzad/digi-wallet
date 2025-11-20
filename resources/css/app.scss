@@ -1,0 +1,7 @@
+// Use @forward for Bootstrap - this is the modern approach
+@forward 'bootstrap/scss/bootstrap';
+
+// Optional: Bootstrap Icons (this still needs @import for CSS)
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+// custom SCSS below
