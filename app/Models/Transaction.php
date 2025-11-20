@@ -10,6 +10,10 @@ class Transaction extends Model
 {
     use HasFactory;
 
+    public const TYPE_SENT = 'sent';
+    public const TYPE_RECEIVED = 'received';
+
+
     /**
      * The attributes that are mass assignable.
      *
@@ -19,13 +23,14 @@ class Transaction extends Model
         'sender_id',
         'receiver_id',
         'amount',
+        'trans_type',
         'commission_fee',
         'sender_balance_before',
         'sender_balance_after',
         'receiver_balance_before',
         'receiver_balance_after',
         'status',
-        'meta'
+        'extra'
     ];
 
     /**
@@ -40,6 +45,7 @@ class Transaction extends Model
         'sender_balance_after' => 'decimal:2',
         'receiver_balance_before' => 'decimal:2',
         'receiver_balance_after' => 'decimal:2',
+        'extra' => 'json',
     ];
 
     /**
