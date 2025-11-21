@@ -1,59 +1,237 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Digital Wallet (Laravel + Vue.js)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This project is a simplified high‑performance digital wallet system built using **Laravel**, **MySQL**, **Vue 3**, and **Pusher**. It allows users to transfer money between accounts in real time, using fully atomic, concurrency‑safe operations.
 
-## About Laravel
+This README intentionally follows a **Test‑Driven Development (TDD)** workflow: each feature section begins with a **Feature Test**, followed by the implementation steps.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# 1. Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+* PHP >= 8.3
+* Composer
+* Node.js + NPM
+* MySQL 8+
+* Pusher account
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+# 2. Initial Laravel Setup
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Install Laravel Sanctum for API authentication:
 
-## Laravel Sponsors
+```bash
+composer create-project laravel/laravel digit-wallet
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Generate app key (if required):
 
-### Premium Partners
+```bash
+php artisan key:generate
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Install Laravel Sanctum for API authentication:
 
-## Contributing
+```bash
+composer require laravel/sanctum
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+php artisan install:api
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Enable Sanctum middleware in `app/Http/Kernel.php`.
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 3. Environment Configuration
 
-## Security Vulnerabilities
+Copy `.env.example`:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+cp .env .env
+```
 
-## License
+Add database credentials:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```
+DB_DATABASE=digital_wallet
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+SPA Cookie settings between VUE javascript and laravel
+```
+SESSION_DRIVER=cookie
+SESSION_LIFETIME=120
+SESSION_ENCRYPT=false
+SESSION_PATH=/
+SESSION_DOMAIN=localhost
+SANCTUM_STATEFUL_DOMAINS=localhost,localhost:8000,127.0.0.1,127.0.0.1:8000,::1,127.0.0.1:5173,localhost:5173
+```
+
+Add Pusher:
+
+```
+BROADCAST_DRIVER=pusher
+PUSHER_APP_ID=your-id
+PUSHER_APP_KEY=your-key
+PUSHER_APP_SECRET=your-secret
+PUSHER_APP_CLUSTER=mt1
+PUSHER_PORT=443
+PUSHER_SCHEME=https
+```
+
+
+---
+
+# 4. Install Frontend (Vue.js)
+
+```bash
+npm install
+npm install vue@latest laravel-vite-plugin axios pusher-js laravel-echo
+```
+
+Initialize Vue:
+
+```bash
+php artisan breeze:install vue
+php artisan preset vue --no-auth
+```
+
+---
+
+# 5. Database Test (TDD)
+
+Create migrations:
+
+```bash
+php artisan migrate
+```
+
+## Unit Test
+
+Database schema tests:
+
+```bash
+php artisan test --filter=DatabaseStructureTest
+```
+
+---
+
+# 6. Feature: List Transactions (`GET /api/transactions`)
+
+## Feature Test
+
+```bash
+php artisan test --filter=TransactionListTest
+```
+
+---
+
+# 7. Feature: Create Transfer (`POST /api/transactions`)
+
+## Feature Test
+
+```bash
+php artisan test --filter=MoneyTransferTest
+```
+
+---
+
+# 8. Feature: Real‑Time Pusher Broadcasting
+
+## Feature Test
+
+Laravel Pusher calls in test mode with the event dispatch:
+
+```bash
+php artisan test --filter=RealtimeTransferEventTest
+```
+
+---
+
+# 9. Running All the Tests
+
+```bash
+php artisan test
+```
+
+---
+
+# 10. Starting the App
+
+Backend:
+
+```bash
+php artisan serve
+```
+
+Queue worker (needed for broadcasts):
+
+```bash
+php artisan queue:work
+```
+
+Frontend:
+
+```bash
+npm run dev
+```
+
+---
+
+## Deployment Instructions
+
+### 1. Production Server Requirements
+
+* **PHP**: Latest supported version for Laravel (e.g., PHP 8.3+)
+* **Nginx or Apache** (Nginx recommended)
+* **MySQL 8+**
+* **Redis** (recommended for queue & cache performance)
+* **Supervisor** for queue workers (optional)
+
+---
+
+### 2. Deployment Steps
+
+#### **Clone the Repository**
+
+```bash
+git clone https://github.com/fshahzad/digi-wallet
+cd digi-wallet
+```
+
+#### **Install Dependencies**
+
+```bash
+composer install --optimize-autoloader --no-dev
+npm install && npm run build
+```
+
+#### **Environment Setup**
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+### 5. Optimize Laravel for Production
+
+```bash
+php artisan optimize
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+
+### 7. Deploy Frontend SPA (Vue)
+
+The production build is already located in `public/` after running:
+
+```bash
+npm run build
+```
+
+Ensure the server points to `public/index.html` for the SPA.
+
+---

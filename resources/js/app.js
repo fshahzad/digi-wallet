@@ -1,16 +1,21 @@
 import './bootstrap';
-
+import * as bootstrap from 'bootstrap';
 import { createApp } from 'vue';
 import App from '../../src/App.vue';
+import router from '../../src/router';
+import useAuth from '../../src/useAuth';
 
-// Import Bootstrap JS (optional - for components like modals, dropdowns)
-import * as bootstrap from 'bootstrap';
-
-const appName = import.meta.env.VITE_APP_NAME || '';
 const app = createApp(App);
 
-// Make Bootstrap available globally in your Vue app if needed
+app.use(router);
+
+// Make Bootstrap available globally in Vue app
 app.config.globalProperties.$bootstrap = bootstrap;
 
-app.mount('#app');
-//createApp(App).mount('#app');
+useAuth.attempt().then(() => {
+    //console.log('User authenticated:', useAuth.authenticated);
+    //console.log( useAuth.user );
+    app.mount('#app');
+});
+
+
