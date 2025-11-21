@@ -7,9 +7,10 @@ use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Queue\SerializesModels;
 
-class TransferEvent implements ShouldBroadcast
+class TransferEvent implements ShouldBroadcast, ShouldDispatchAfterCommit
 {
     use InteractsWithSockets, SerializesModels;
 
@@ -33,22 +34,34 @@ class TransferEvent implements ShouldBroadcast
     public function broadcastWith()
     {
         return [
-            'transaction' => $this->transaction->only([
-                'id',
-                'sender_id',
-                'receiver_id',
-                'amount',
-                'trans_type',
-                //'commission', // Decision to include commission or not?
-            ])
+            'id' => $this->transaction->id,
+            'receiver' => [
+                'id' => $this->transaction->receiver->id,
+                'name' => $this->transaction->receiver->name,
+            ],
+            'sender' => [
+                'id' => $this->transaction->sender->id,
+                'name' => $this->transaction->sender->name,
+            ],
+            'sender_id' => $this->transaction->sender_id,
+            'receiver_id' => $this->transaction->receiver_id,
+            'amount' => $this->transaction->amount,
+            'commission' => $this->transaction->commission, //to be or not be sent ??
+            //'sender_balance_after' => $this->transaction->sender_balance_after,
+            'receiver_balance_before' => $this->transaction->receiver_balance_before,
+            'receiver_balance_after' => $this->transaction->receiver_balance_after,
+            'trans_date' => $this->transaction->created_at->format('d F, Y H:i:s'),
         ];
     }
 
     public function broadcastAs()
     {
+        return 'WalletTransfer';
+        /*
         return match($this->transaction->trans_type) {
             Transaction::TYPE_SENT => 'TransferSent',
             Transaction::TYPE_RECEIVED => 'TransferReceived',
         };
+        */
     }
 }

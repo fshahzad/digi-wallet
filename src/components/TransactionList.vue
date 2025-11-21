@@ -4,7 +4,6 @@
     <div class="container mb-4">
         <div class="row mb-2" v-for="txn in transactions.data" :key="txn.id">
             <div class="col-sm-4">{{ txn.trans_date }}</div>
-            <!-- <div>{{ txn.trans_type.toUpperCase() }}</div> -->
             <div class="col-sm-2">
                 <strong v-if="txn.sender_id === user.id">To:</strong>
                 <strong v-else>From:</strong>

@@ -109,11 +109,16 @@ class TransactionController extends Controller
                         'status' => 'completed',
                     ]);
                     // Broadcast event to sender/receiver users channels
-                    // broadcast(new TransferEvent($txn))->toOthers(); // we'll use private channels
+                    broadcast(new TransferEvent($txn))->toOthers(); // we'll use private channels
                     //
                     return response()->json([
                         'message' => 'Transfer completed',
                         //'transaction' => $txn, //Depends on need to expose full transaction details or not
+                        'receiver' => [
+                            'id' => $receiver->id,
+                            'name' => $receiver->name,
+                        ],
+                        'amount' => $amount,
                         'balance' => $sender->balance,
                     ], 200);
                 }, $this->maxAttempts); // transaction attempts
